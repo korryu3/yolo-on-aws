@@ -1,6 +1,6 @@
-def main():
-    print("Hello from app!")
+from fastapi import FastAPI
+app = FastAPI()
 
-
-if __name__ == "__main__":
-    main()
+@app.get("/healthz")
+def healthz():
+    return {"ok": True}
