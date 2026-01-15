@@ -14,7 +14,7 @@ provider "aws" {
 
 # Terraform state用のS3バケット
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "yolo-on-aws-terraform-state"
+  bucket = "yolo-on-aws-tf-state"
 
   tags = {
     Name        = "Terraform State Bucket"
