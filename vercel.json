@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "http://yolo-on-aws-alb-304785389.us-east-1.elb.amazonaws.com/api/$1"
+    }
+  ]
+}

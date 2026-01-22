@@ -68,12 +68,11 @@ export function ImageUpload() {
       formData.append('file', selectedFile);
       formData.append('conf_threshold', confThreshold.toString());
 
-      const apiUrl = import.meta.env.VITE_API_URL;
-      if (!apiUrl) {
-        throw new Error('API URLが設定されていません');
-      }
+      // VITE_API_URL が未設定なら同一オリジン (/api/...) を使う
+      const apiUrl = import.meta.env.VITE_API_URL ?? '';
+      const endpoint = apiUrl ? `${apiUrl}/api/detect` : '/api/detect';
 
-      const response = await fetch(`${apiUrl}/api/detect`, {
+      const response = await fetch(endpoint, {
         method: 'POST',
         body: formData,
       });
