@@ -1,13 +1,26 @@
 import { useState } from 'react';
+import { DetectionCanvas } from './DetectionCanvas';
 
 interface Detection {
-  // 将来的にYOLOの検出結果を格納
+  class_id: number;
+  class_name: string;
+  confidence: number;
+  bbox: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  };
 }
 
 interface ApiResponse {
   status: string;
   detections: Detection[];
-  message?: string;
+  image_size?: {
+    width: number;
+    height: number;
+  };
+  conf_threshold?: number;
 }
 
 export function ImageUpload() {
@@ -16,6 +29,7 @@ export function ImageUpload() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ApiResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [confThreshold, setConfThreshold] = useState<number>(0.25);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -52,6 +66,7 @@ export function ImageUpload() {
     try {
       const formData = new FormData();
       formData.append('file', selectedFile);
+      formData.append('conf_threshold', confThreshold.toString());
 
       const apiUrl = import.meta.env.VITE_API_URL;
       if (!apiUrl) {
@@ -109,7 +124,27 @@ export function ImageUpload() {
         )}
       </div>
 
-      {previewUrl && (
+      {/* 信頼度閾値スライダー */}
+      <div className="mb-8 max-w-md mx-auto">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          信頼度閾値: {confThreshold.toFixed(2)}
+        </label>
+        <input
+          type="range"
+          min="0.1"
+          max="1.0"
+          step="0.05"
+          value={confThreshold}
+          onChange={(e) => setConfThreshold(parseFloat(e.target.value))}
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+        />
+        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <span>0.1</span>
+          <span>1.0</span>
+        </div>
+      </div>
+
+      {previewUrl && !result && (
         <div className="mb-8 text-center">
           <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">プレビュー</h3>
           <img 
@@ -144,12 +179,46 @@ export function ImageUpload() {
         </div>
       )}
 
-      {result && (
-        <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">結果</h3>
-          <pre className="bg-white dark:bg-gray-900 p-4 rounded overflow-x-auto text-sm text-gray-800 dark:text-gray-200">
-            {JSON.stringify(result, null, 2)}
-          </pre>
+      {result && result.image_size && (
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4 text-center text-gray-800 dark:text-white">
+            検出結果 ({result.detections.length}件)
+          </h3>
+          
+          {/* Canvas + 画像表示 */}
+          <div className="text-center mb-6">
+            <DetectionCanvas
+              imageUrl={previewUrl!}
+              detections={result.detections}
+              imageSize={result.image_size}
+            />
+          </div>
+
+          {/* 検出結果テーブル */}
+          {result.detections.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <thead className="bg-gray-100 dark:bg-gray-700">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">信頼度</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">座標 (x1, y1, x2, y2)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {result.detections.map((detection, index) => (
+                    <tr key={index} className="border-t border-gray-200 dark:border-gray-700">
+                      <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-200">
+                        {(detection.confidence * 100).toFixed(1)}%
+                      </td>
+                      <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-200 font-mono">
+                        ({detection.bbox.x1}, {detection.bbox.y1}, {detection.bbox.x2}, {detection.bbox.y2})
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
     </div>
