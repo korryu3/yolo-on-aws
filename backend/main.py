@@ -5,12 +5,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from backend.config import settings
-from backend.services.model_loader import ModelLoader
-from backend.services.image_processing import ImageProcessor
-from backend.api import dependencies
-from backend.api.routes import router
-from backend.utils.logger import logger
+from config import settings
+from services.model_loader import ModelLoader
+from services.image_processing import ImageProcessor
+from api import dependencies
+from api.routes import router
+from utils.logger import logger
 
 
 @asynccontextmanager

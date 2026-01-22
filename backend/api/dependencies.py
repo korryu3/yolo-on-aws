@@ -1,8 +1,8 @@
 """FastAPI依存性注入"""
 from fastapi import HTTPException
-from backend.services.model_loader import ModelLoader
-from backend.services.inference import InferenceService
-from backend.services.image_processing import ImageProcessor
+from services.model_loader import ModelLoader
+from services.inference import InferenceService
+from services.image_processing import ImageProcessor
 
 
 # グローバルインスタンス（アプリケーション起動時に初期化）

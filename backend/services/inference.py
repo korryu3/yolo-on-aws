@@ -1,7 +1,7 @@
 """YOLO推論サービス"""
 import numpy as np
 import onnxruntime as ort
-from backend.utils.logger import logger
+from utils.logger import logger
 
 
 class InferenceService:

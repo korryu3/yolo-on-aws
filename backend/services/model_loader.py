@@ -1,7 +1,7 @@
 """YOLOモデルのロード処理"""
 from pathlib import Path
 import onnxruntime as ort
-from backend.utils.logger import logger
+from utils.logger import logger
 
 
 class ModelLoader:

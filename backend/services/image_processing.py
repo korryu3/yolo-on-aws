@@ -2,9 +2,9 @@
 from PIL import Image, ImageOps
 import numpy as np
 import io
-from backend.utils.constants import INPUT_SIZE, PADDING_COLOR, CLASSES
-from backend.models.schemas import Detection
-from backend.utils.logger import logger
+from utils.constants import INPUT_SIZE, PADDING_COLOR, CLASSES
+from models.schemas import Detection
+from utils.logger import logger
 
 
 class ImageProcessor:

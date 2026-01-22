@@ -1,11 +1,11 @@
 """APIエンドポイント定義"""
 from fastapi import APIRouter, File, UploadFile, Form, HTTPException, Depends
-from backend.models.schemas import DetectionResponse, ImageSize
-from backend.services.inference import InferenceService
-from backend.services.image_processing import ImageProcessor
-from backend.api.dependencies import get_inference_service, get_image_processor
-from backend.config import settings
-from backend.utils.logger import logger
+from models.schemas import DetectionResponse, ImageSize
+from services.inference import InferenceService
+from services.image_processing import ImageProcessor
+from api.dependencies import get_inference_service, get_image_processor
+from config import settings
+from utils.logger import logger
 
 router = APIRouter()
 

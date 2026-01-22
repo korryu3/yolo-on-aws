@@ -1,7 +1,7 @@
 """ロギング設定"""
 import logging
 import sys
-from backend.config import settings
+from config import settings
 
 
 def setup_logger(name: str = __name__) -> logging.Logger:

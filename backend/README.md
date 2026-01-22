@@ -50,17 +50,19 @@ uv run fastapi dev --port 8080
 
 フロントエンドとバックエンドを同時に起動:
 
-1. **ターミナル1（バックエンド）**:
-   ```bash
-   cd backend
-   uv run fastapi dev --port 8080
-   ```
+#### 1. ターミナル1（バックエンド）
 
-2. **ターミナル2（フロントエンド）**:
-   ```bash
-   cd frontend
-   npm run dev
-   ```
+```bash
+cd backend
+uv run uvicorn main:app  --host localhost --port 8080
+```
+
+#### 2. ターミナル2（フロントエンド）
+
+```bash
+cd frontend
+npm run dev
+```
 
 ## API エンドポイント
 
@@ -69,6 +71,7 @@ uv run fastapi dev --port 8080
 ヘルスチェック用エンドポイント
 
 **レスポンス:**
+
 ```json
 {
   "ok": true
@@ -80,30 +83,13 @@ uv run fastapi dev --port 8080
 画像ファイルをアップロードし、物体検出を実行します（現在は仮実装）。
 
 **リクエスト:**
+
 - Content-Type: `multipart/form-data`
 - Body: `file` - 画像ファイル（image/*）
 
-**レスポンス（成功）:**
-```json
-{
-  "status": "ok",
-  "detections": [],
-  "message": "画像 'example.jpg' を受信しました（推論処理は未実装）"
-}
-```
-
-**レスポンス（エラー）:**
-```json
-{
-  "status": "error",
-  "message": "画像ファイルのみアップロード可能です",
-  "detections": []
-}
-```
-
 ## プロジェクト構造
 
-```
+```text
 backend/
 ├── __init__.py              # Pythonパッケージ初期化
 ├── main.py                  # FastAPIアプリケーション
@@ -115,6 +101,7 @@ backend/
 ## CORS設定
 
 以下のオリジンからのリクエストを許可:
+
 - `http://localhost:5173` - Vite開発サーバー
 - `https://*.vercel.app` - Vercel本番/プレビュー環境
 
@@ -129,20 +116,6 @@ backend/
 docker build -t yolo-on-aws .
 docker run -p 8080:8080 yolo-on-aws
 ```
-
-### AWS Fargate デプロイ
-
-1. **ECRにプッシュ**:
-   ```bash
-   # プロジェクトルートで実行
-   ./api-push.sh
-   ```
-
-2. **Terraformでデプロイ**:
-   ```bash
-   cd infra
-   terraform apply
-   ```
 
 詳細は[プロジェクトルートのREADME](../README.md)を参照してください。
 
