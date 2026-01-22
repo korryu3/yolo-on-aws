@@ -1,0 +1,12 @@
+"""定数定義"""
+
+# YOLO関連
+INPUT_SIZE = 640
+PADDING_COLOR = (114, 114, 114)
+DEFAULT_CONFIDENCE_THRESHOLD = 0.25
+
+# クラス定義
+CLASSES = ["weed"]
+
+# モデル設定
+MODEL_FILENAME = "YOLOv10n.onnx"
