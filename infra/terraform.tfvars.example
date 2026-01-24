@@ -1,0 +1,45 @@
+# ======================
+# Terraform Variables Template
+# ======================
+# このファイルをコピーして terraform.tfvars として使用してください
+# または -var-file オプションで dev.tfvars / staging.tfvars / prod.tfvars を指定
+
+# ======================
+# 必須変数（実行時に必ず指定）
+# ======================
+# ECRイメージURI（bash api-push.sh の出力を指定）
+image_uri = "123456789012.dkr.ecr.us-east-1.amazonaws.com/yolo-on-aws-api:latest"
+
+# ECSタスク実行ロールARN（AWS Academy の場合は LabRole）
+execution_role_arn = "arn:aws:iam::123456789012:role/LabRole"
+
+# ======================
+# 環境設定
+# ======================
+environment = "dev"
+aws_region  = "us-east-1"
+
+# ======================
+# ネットワーク設定
+# ======================
+vpc_cidr            = "10.0.0.0/16"
+public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+# availability_zones = ["us-east-1a", "us-east-1b"]  # 空の場合はリージョンの最初の2つを使用
+
+# ======================
+# ECR設定
+# ======================
+enable_force_delete = true  # 開発環境では true、本番環境では false 推奨
+
+# ======================
+# ECS設定
+# ======================
+ecs_task_cpu    = 256   # 0.25 vCPU
+ecs_task_memory = 512   # 512 MB
+ecs_desired_count = 1
+container_port  = 8080
+
+# ======================
+# 共通設定
+# ======================
+project_name = "yolo-on-aws"
