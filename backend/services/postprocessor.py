@@ -1,7 +1,7 @@
 """推論結果後処理サービス"""
 
 import numpy as np
-from models.schemas import Detection
+from models.schemas import BoundingBox, Detection
 from services.base import ClassMapperBase, PostprocessorBase
 from utils.constants import INPUT_SIZE
 
@@ -88,17 +88,17 @@ class YOLOPostprocessor(PostprocessorBase):
             confidence = float(filtered_outputs[i, 4])
 
             detections.append(
-                {
-                    "class_id": class_id,
-                    "class_name": self.class_mapper.get_class_name(class_id),
-                    "confidence": round(confidence, 3),
-                    "bbox": {
-                        "x1": round(float(box[0]), 4),
-                        "y1": round(float(box[1]), 4),
-                        "x2": round(float(box[2]), 4),
-                        "y2": round(float(box[3]), 4),
-                    },
-                }
+                Detection(
+                    class_id=class_id,
+                    class_name=self.class_mapper.get_class_name(class_id),
+                    confidence=round(confidence, 3),
+                    bbox=BoundingBox(
+                        x1=round(float(box[0]), 4),
+                        y1=round(float(box[1]), 4),
+                        x2=round(float(box[2]), 4),
+                        y2=round(float(box[3]), 4),
+                    ),
+                )
             )
 
         return detections
