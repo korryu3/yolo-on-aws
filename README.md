@@ -2,42 +2,49 @@
 
 ## 初回デプロイ手順
 
-### 1. Bootstrap (S3バケット作成)
+### tfvarsファイル作成
+
+```bash
+cp infra/dev.tfvars.example infra/dev.tfvars
+# execution_role_arnに適切なIAMロールARNを設定
+```
+
+### Bootstrap (S3バケット作成)
+
 ```bash
 cd infra/bootstrap
 terraform init
 terraform apply
 ```
 
-### 2. ECRリポジトリ作成 & Dockerイメージプッシュ
+### ECRリポジトリ作成 & Dockerイメージプッシュ
+
 ```bash
 cd ../  # infraディレクトリに戻る
 terraform init
 terraform apply -target=aws_ecr_repository.api -var="image_uri=dummy"  # ECRリポジトリのみ作成
 
-cd ..  # プロジェクトルートに戻る
 bash api-push.sh
-# 出力されたIMAGE_URIをコピー（次のステップで使う）
+# 出力されたIMAGE_URIをコピーし、dev.tfvarsのimage_uriに貼り付けて保存
 ```
 
-### 3. インフラ全体をデプロイ
+### インフラ全体をデプロイ
+
 ```bash
 cd infra
-terraform apply \
-  -var="image_uri=<IMAGE_URI>" \
-  -var="execution_role_arn=arn:aws:iam::<AWSアカウントID>:role/LabRole"
+terraform apply
 ```
 
 デプロイ完了後、出力されたALBのURLにアクセス：
-```
+
+```text
 http://yolo-on-aws-alb-xxxxx.us-east-1.elb.amazonaws.com/healthz
 ```
-
----
 
 ## ECSサービスの起動/停止（コスト節約）
 
 ### サービスを停止（料金発生を止める）
+
 ```bash
 aws ecs update-service \
   --cluster yolo-on-aws-ecs-cluster \
@@ -47,6 +54,7 @@ aws ecs update-service \
 ```
 
 ### サービスを起動（使いたい時）
+
 ```bash
 aws ecs update-service \
   --cluster yolo-on-aws-ecs-cluster \
@@ -56,6 +64,7 @@ aws ecs update-service \
 ```
 
 ### 現在の状態を確認
+
 ```bash
 aws ecs describe-services \
   --cluster yolo-on-aws-ecs-cluster \
@@ -65,16 +74,16 @@ aws ecs describe-services \
   --output json
 ```
 
----
-
 ## 再デプロイ（コード変更時）
 
 ### Dockerイメージを再ビルド & プッシュ
+
 ```bash
 bash api-push.sh
 ```
 
 ### ECSサービスを強制的に再デプロイ
+
 ```bash
 aws ecs update-service \
   --cluster yolo-on-aws-ecs-cluster \
@@ -83,14 +92,11 @@ aws ecs update-service \
   --region us-east-1
 ```
 
----
-
 ## インフラ削除（完全に削除する場合）
+
 ```bash
 cd infra
-terraform destroy \
-  -var="image_uri=<IMAGE_URI>" \
-  -var="execution_role_arn=arn:aws:iam::<AWSアカウントID>:role/LabRole"
+terraform destroy
 ```
 
 ## infra構成

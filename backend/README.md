@@ -38,10 +38,11 @@ uv sync
 ```bash
 # ポート8080で起動（推奨）
 cd backend
-uv run fastapi dev --port 8080
+uv run uvicorn main:app --reload --port 8080
 ```
 
 開発サーバーが起動したら:
+
 - API: http://127.0.0.1:8080
 - ドキュメント: http://127.0.0.1:8080/docs
 - ReDoc: http://127.0.0.1:8080/redoc
@@ -92,10 +93,17 @@ npm run dev
 ```text
 backend/
 ├── __init__.py              # Pythonパッケージ初期化
+├── README.md                # このREADMEファイル
+├── pyproject.toml           # uvプロジェクト設定
+├── uv.lock                  # uvロックファイル
 ├── main.py                  # FastAPIアプリケーション
-├── YOLOv10n.onnx           # YOLOモデルファイル
-├── static/                 # 静的ファイル（予定）
-└── __pycache__/            # Pythonキャッシュ
+├── config.py                # 設定ファイル
+├── test_inference.py        # 推論テストスクリプト
+├── YOLOv10n.onnx            # YOLOモデルファイル
+├── api/                     # APIエンドポイント定義
+├── services/                # サービス層(推論・画像処理)
+├── models/                  # Pydanticモデル定義
+└── utils/                   # ユーティリティ関数
 ```
 
 ## CORS設定
@@ -118,13 +126,3 @@ docker run -p 8080:8080 yolo-on-aws
 ```
 
 詳細は[プロジェクトルートのREADME](../README.md)を参照してください。
-
-## 次のステップ
-
-- [ ] ONNX Runtimeの依存関係追加
-- [ ] YOLOv10nモデルのロード処理実装
-- [ ] 画像前処理・後処理の実装
-- [ ] 検出結果の可視化データ生成
-- [ ] ユニットテスト追加
-- [ ] ロギング強化
-- [ ] エラーハンドリング改善
