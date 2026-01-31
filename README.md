@@ -92,3 +92,7 @@ terraform destroy \
   -var="image_uri=<IMAGE_URI>" \
   -var="execution_role_arn=arn:aws:iam::<AWSアカウントID>:role/LabRole"
 ```
+
+## infra構成
+
+![infra-architecture](infra/assets/architecture.svg)
