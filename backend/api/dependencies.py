@@ -1,29 +1,22 @@
 """FastAPI依存性注入"""
-from fastapi import HTTPException
-from services.model_loader import ModelLoader
-from services.inference import InferenceService
-from services.image_processing import ImageProcessor
+
+from container import Container
+from dependency_injector.wiring import Provide, inject
+from fastapi import Depends
+from services.base import ImageProcessorBase, InferenceServiceBase
 
 
-# グローバルインスタンス（アプリケーション起動時に初期化）
-model_loader: ModelLoader | None = None
-image_processor: ImageProcessor | None = None
-
-
-def get_inference_service() -> InferenceService:
+@inject
+def get_inference_service(
+    service: InferenceServiceBase = Depends(Provide[Container.inference_service]),
+) -> InferenceServiceBase:
     """推論サービスを取得"""
-    if model_loader is None:
-        raise HTTPException(status_code=503, detail="Model loader not initialized")
-    
-    try:
-        session = model_loader.get_session()
-        return InferenceService(session)
-    except RuntimeError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    return service
 
 
-def get_image_processor() -> ImageProcessor:
+@inject
+def get_image_processor(
+    processor: ImageProcessorBase = Depends(Provide[Container.image_processor]),
+) -> ImageProcessorBase:
     """画像処理サービスを取得"""
-    if image_processor is None:
-        raise HTTPException(status_code=503, detail="Image processor not initialized")
-    return image_processor
+    return processor

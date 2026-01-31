@@ -1,16 +1,18 @@
 """
 FastAPI backend for YOLO object detection
 """
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+
 from contextlib import asynccontextmanager
 
-from config import settings
-from services.model_loader import ModelLoader
-from services.image_processing import ImageProcessor
-from api import dependencies
 from api.routes import router
+from config import settings
+from container import Container
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from utils.logger import logger
+
+# DIコンテナを初期化
+container = Container()
 
 
 @asynccontextmanager
@@ -18,22 +20,17 @@ async def lifespan(app: FastAPI):
     """アプリケーションのライフサイクル管理"""
     # 起動時
     logger.info("Starting YOLO backend application...")
-    
-    # モデルローダーを初期化
-    model_loader = ModelLoader(settings.model_path)
-    model_loader.load()
-    dependencies.model_loader = model_loader
-    
-    # 画像処理サービスを初期化
-    image_processor = ImageProcessor(input_size=settings.input_size)
-    dependencies.image_processor = image_processor
-    
+
+    # コンテナのリソースを初期化
+    container.init_resources()
+
     logger.info("Application startup complete")
-    
+
     yield
-    
+
     # 終了時
     logger.info("Shutting down application...")
+    container.shutdown_resources()
 
 
 # FastAPIアプリケーション
@@ -41,8 +38,11 @@ app = FastAPI(
     title="YOLO Detection API",
     description="YOLOv10 based object detection API",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
+
+# DIコンテナをワイヤリング
+container.wire(modules=["api.dependencies", "api.routes"])
 
 # CORS設定
 app.add_middleware(
